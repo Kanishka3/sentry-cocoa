@@ -6,6 +6,11 @@
 
 - Add frames delay to transactions (#3487)
 - Add slow and frozen frames to spans (#3450, #3478)
+
+### Fixes
+
+- TTFD waits for next drawn frame (#3505) only when enabling `options.performanceV2 = true`.
+
 ## 8.17.2
 
 ### Fixes

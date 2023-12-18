@@ -31,6 +31,7 @@ static NSString *const SENTRY_UI_PERFORMANCE_TRACKER_TTD_TRACKER
 @property (nonatomic, strong) SentryInAppLogic *inAppLogic;
 
 @property (nonatomic) BOOL enableWaitForFullDisplay;
+@property (nonatomic) BOOL enablePerformanceV2;
 
 /**
  * Measures @c controller's @c loadView method.

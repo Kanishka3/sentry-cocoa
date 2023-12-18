@@ -1050,7 +1050,7 @@ class SentryHubTests: XCTestCase {
 class TestTimeToDisplayTracker: SentryTimeToDisplayTracker {
     
     init() {
-        super.init(for: UIViewController(), waitForFullDisplay: false)
+        super.init(for: UIViewController(), waitForFullDisplay: false, fullDisplayWaitsForNextFrame: false)
     }
     
     var registerFullDisplayCalled = false

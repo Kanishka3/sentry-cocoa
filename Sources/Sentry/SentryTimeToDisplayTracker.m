@@ -26,6 +26,7 @@ SentryTimeToDisplayTracker () <SentryFramesTrackerListener>
 
 @implementation SentryTimeToDisplayTracker {
     BOOL _waitForFullDisplay;
+    BOOL _fullDisplayWaitsForNextFrame;
     BOOL _isReadyToDisplay;
     BOOL _fullyDisplayedReported;
     NSString *_controllerName;
@@ -33,10 +34,12 @@ SentryTimeToDisplayTracker () <SentryFramesTrackerListener>
 
 - (instancetype)initForController:(UIViewController *)controller
                waitForFullDisplay:(BOOL)waitForFullDisplay
+     fullDisplayWaitsForNextFrame:(BOOL)fullDisplayWaitsForNextFrame
 {
     if (self = [super init]) {
         _controllerName = [SwiftDescriptor getObjectClassName:controller];
         _waitForFullDisplay = waitForFullDisplay;
+        _fullDisplayWaitsForNextFrame = fullDisplayWaitsForNextFrame;
 
         _isReadyToDisplay = NO;
         _fullyDisplayedReported = NO;
@@ -78,7 +81,8 @@ SentryTimeToDisplayTracker () <SentryFramesTrackerListener>
 - (void)reportFullyDisplayed
 {
     _fullyDisplayedReported = YES;
-    if (self.waitForFullDisplay && _isReadyToDisplay) {
+
+    if (self.waitForFullDisplay && _isReadyToDisplay && !_fullDisplayWaitsForNextFrame) {
         // We need the timestamp to be able to calculate the duration
         // but we can't finish first and add measure later because
         // finishing the span may trigger the tracer finishInternal.
@@ -108,14 +112,22 @@ SentryTimeToDisplayTracker () <SentryFramesTrackerListener>
         [self addTimeToDisplayMeasurement:self.initialDisplaySpan name:@"time_to_initial_display"];
 
         [self.initialDisplaySpan finish];
-        [SentryDependencyContainer.sharedInstance.framesTracker removeListener:self];
+
+        if (!_fullDisplayWaitsForNextFrame) {
+            [SentryDependencyContainer.sharedInstance.framesTracker removeListener:self];
+        }
     }
     if (_waitForFullDisplay && _fullyDisplayedReported && self.fullDisplaySpan.isFinished == NO) {
         self.fullDisplaySpan.timestamp = finishTime;
 
-        [self addTimeToDisplayMeasurement:self.initialDisplaySpan name:@"time_to_full_display"];
+        [self addTimeToDisplayMeasurement:self.fullDisplaySpan name:@"time_to_full_display"];
 
         [self.fullDisplaySpan finish];
+    }
+
+    if (_fullDisplayWaitsForNextFrame && self.initialDisplaySpan.isFinished == YES
+        && self.fullDisplaySpan.isFinished == YES) {
+        [SentryDependencyContainer.sharedInstance.framesTracker removeListener:self];
     }
 }
 

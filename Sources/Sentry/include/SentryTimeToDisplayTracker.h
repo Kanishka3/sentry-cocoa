@@ -25,7 +25,8 @@ SENTRY_NO_INIT
 @property (nonatomic, readonly) BOOL waitForFullDisplay;
 
 - (instancetype)initForController:(UIViewController *)controller
-               waitForFullDisplay:(BOOL)waitForFullDisplay;
+               waitForFullDisplay:(BOOL)waitForFullDisplay
+     fullDisplayWaitsForNextFrame:(BOOL)fullDisplayWaitsForNextFrame;
 
 - (void)startForTracer:(SentryTracer *)tracer;
 

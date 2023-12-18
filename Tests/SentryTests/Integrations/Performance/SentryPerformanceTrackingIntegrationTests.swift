@@ -1,3 +1,4 @@
+import Nimble
 import SentryTestUtils
 import XCTest
 
@@ -86,6 +87,27 @@ class SentryPerformanceTrackingIntegrationTests: XCTestCase {
         sut.install(with: options)
 
         XCTAssertFalse(SentryUIViewControllerPerformanceTracker.shared.enableWaitForFullDisplay)
+    }
+    
+    func testConfigure_PerformanceV2_Default() {
+        let sut = SentryPerformanceTrackingIntegration()
+
+        let options = Options()
+        options.tracesSampleRate = 0.1
+        sut.install(with: options)
+
+        expect(SentryUIViewControllerPerformanceTracker.shared.enablePerformanceV2) == false
+    }
+    
+    func testConfigure_PerformanceV2_Enabled() {
+        let sut = SentryPerformanceTrackingIntegration()
+
+        let options = Options()
+        options.tracesSampleRate = 0.1
+        options.enablePerformanceV2 = true
+        sut.install(with: options)
+
+        expect(SentryUIViewControllerPerformanceTracker.shared.enablePerformanceV2) == true
     }
     
 #endif

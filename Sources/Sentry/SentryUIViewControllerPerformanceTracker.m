@@ -45,6 +45,7 @@ SentryUIViewControllerPerformanceTracker ()
                                                             inAppExcludes:options.inAppExcludes];
 
         _enableWaitForFullDisplay = NO;
+        _enablePerformanceV2 = NO;
     }
     return self;
 }
@@ -141,7 +142,8 @@ SentryUIViewControllerPerformanceTracker ()
 
     SentryTimeToDisplayTracker *ttdTracker =
         [[SentryTimeToDisplayTracker alloc] initForController:controller
-                                           waitForFullDisplay:self.enableWaitForFullDisplay];
+                                           waitForFullDisplay:self.enableWaitForFullDisplay
+                                 fullDisplayWaitsForNextFrame:self.enablePerformanceV2];
 
     objc_setAssociatedObject(controller, &SENTRY_UI_PERFORMANCE_TRACKER_TTD_TRACKER, ttdTracker,
         OBJC_ASSOCIATION_ASSIGN);
