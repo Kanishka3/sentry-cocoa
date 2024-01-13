@@ -47,6 +47,11 @@
 #    import <SentryScreenFrames.h>
 #endif // SENTRY_HAS_UIKIT
 
+#if defined(TEST) || defined(TESTCI)
+#    import "SentryFileManager+Test.h"
+#    import "SentryInternalDefines.h"
+#endif // defined(TEST) || defined(TESTCI)
+
 NS_ASSUME_NONNULL_BEGIN
 
 static const void *spanTimestampObserver = &spanTimestampObserver;
@@ -201,6 +206,22 @@ SentryTracesSamplerDecision *appLaunchTraceSamplerDecision;
         appLaunchTraceId = [[SentryId alloc] init];
 
         SENTRY_LOG_INFO(@"Starting app launch profile at %llu", appLaunchSystemTime);
+
+#    if defined(TEST) || defined(TESTCI)
+        NSError *error;
+        NSString *path = [SentryFileManager.sentryApplicationSupportPath
+            stringByAppendingPathComponent:@"launchProfile"];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+            SENTRY_LOG_DEBUG(@"Removing prior launch profile file.");
+            if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
+                SENTRY_LOG_DEBUG(@"Failed to remove last launch profile file: %@", error);
+            } else {
+                SENTRY_LOG_DEBUG(@"Removed previous launch profile file.");
+            }
+        } else {
+            SENTRY_LOG_DEBUG(@"No prior launch profile file to remove.");
+        }
+#    endif // defined(TEST) || defined(TESTCI)
 
         // don't worry about synchronizing the write here, as there should be no other tracing
         // activity going on this early in the process. this codepath is also behind a dispatch_once
