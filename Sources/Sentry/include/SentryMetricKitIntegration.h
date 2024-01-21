@@ -20,7 +20,7 @@ static NSString *const SentryMetricKitHangDiagnosticType = @"MXHangDiagnostic";
 static NSString *const SentryMetricKitHangDiagnosticMechanism = @"mx_hang_diagnostic";
 
 API_AVAILABLE(ios(15.0), macos(12.0), macCatalyst(15.0))
-API_UNAVAILABLE(tvos, watchos)
+API_UNAVAILABLE(tvos, watchos, visionos)
 @interface SentryMetricKitIntegration
     : SentryBaseIntegration <SentryIntegrationProtocol, SentryMXManagerDelegate>
 
